@@ -6,7 +6,7 @@ var bodyParser = require('body-parser');
 
 // Require routes
 var index = require('./routes/index');
-var users = require('./routes/users');
+const api = require('./routes/api/index');
 
 // Setup an express app
 var app = express();
@@ -20,6 +20,18 @@ var app = express();
 // **************************
 
 // CORS config will be here
+app.all('/*', function(req, res, next) {
+  // CORS headers
+  res.header("Access-Control-Allow-Origin", "*"); // restrict it to the required domain
+  res.header('Access-Control-Allow-Methods', 'GET,PUT,POST,DELETE,OPTIONS');
+  // Set custom headers for CORS
+  res.header('Access-Control-Allow-Headers', 'Content-type,Accept,X-Access-Token,X-Key');
+  if (req.method == 'OPTIONS') {
+    res.status(200).end();
+  } else {
+    next();
+  }
+});
 
 // ********************
 
@@ -33,7 +45,7 @@ app.use(bodyParser.json());
 app.use(bodyParser.urlencoded({ extended: false }));
 
 app.use('/', index);
-app.use('/users', users);
+app.use('/api/v1', api)
 
 // catch 404 and forward to error handler
 app.use(function(req, res, next) {
