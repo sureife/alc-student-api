@@ -9,12 +9,26 @@ const Schema   = mongoose.Schema,
 
 const studentSchema = Schema({
     id: ObjectId,
-    first_name: String,
-    last_name: String,
-    matric_number: String,
+    first_name: {
+        type:String,
+        required: [true, 'Please Enter a First Name'],
+        max: 100
+    },
+    last_name: {
+        type:String,
+        required: [true, 'Please Enter a Last Name'],
+        max: 100
+    },
+    matric_number: {
+        type:String,
+        required: [true, 'Please Enter your Matric Number']
+    },
     profile_pic: String,
     course: String,
-    form_of_entry: Number, // 0 - Undergrad, 1 - Direct Entry
+    form_of_entry: {
+        type:Number,
+        enum: [0, 1,]
+    }, // 0 - Undergrad, 1 - Direct Entry
     level: Number,
 });
 
