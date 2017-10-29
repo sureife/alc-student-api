@@ -4,6 +4,9 @@ var path = require('path');
 var logger = require('morgan');
 var bodyParser = require('body-parser');
 
+// Require Secrets File
+const secrets = require("./secrets")
+
 // Require routes
 var index = require('./routes/index');
 const api = require('./routes/api/index');
@@ -14,11 +17,12 @@ var app = express();
 // **************************
 
 // Database connection here
+
 //Import the mongoose module
 var mongoose = require('mongoose');
 
 //Set up default mongoose connection
-var mongoDB = 'mongodb://127.0.0.1/alc-student-dev';
+var mongoDB = secrets.DATABASE_URL;
 mongoose.connect(mongoDB, {
   useMongoClient: true
 });
@@ -46,6 +50,31 @@ app.all('/*', function(req, res, next) {
     next();
   }
 });
+
+// ********************
+
+// **************************
+
+// Authentication setup here
+
+
+var passport = require("passport");
+var LocalStrategy =  require('passport-local').Strategy;
+
+passport.use(new LocalStrategy(
+  (username, password, done) => {
+    User.findOne({ username: username }, function (err, user) {
+      if (err) { return done(err); }
+      if (!user) {
+        return done(null, false, { message: 'Incorrect username.' });
+      }
+      if (!user.validPassword(password)) {
+        return done(null, false, { message: 'Incorrect password.' });
+      }
+      return done(null, user);
+    });
+  }
+));
 
 // ********************
 
