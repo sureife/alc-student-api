@@ -14,6 +14,7 @@ const api = require('./routes/api/index');
 // Setup an express app
 var app = express();
 
+
 // **************************
 
 // Database connection here
@@ -35,6 +36,8 @@ db.on('error', console.error.bind(console, 'MongoDB connection error:'));
 
 // ********************
 
+
+
 // **************************
 
 // CORS config will be here
@@ -53,28 +56,39 @@ app.all('/*', function(req, res, next) {
 
 // ********************
 
+
+
 // **************************
 
 // Authentication setup here
 
 
-var passport = require("passport");
-var LocalStrategy =  require('passport-local').Strategy;
+const passport = require("passport");
+const JwtStrategy =  require('passport-jwt').Strategy;
+const ExtractJwt = require('passport-jwt').ExtractJwt;
 
-passport.use(new LocalStrategy(
-  (username, password, done) => {
-    User.findOne({ username: username }, function (err, user) {
-      if (err) { return done(err); }
-      if (!user) {
-        return done(null, false, { message: 'Incorrect username.' });
-      }
-      if (!user.validPassword(password)) {
-        return done(null, false, { message: 'Incorrect password.' });
-      }
-      return done(null, user);
-    });
-  }
-));
+const Models = require('./models/index');
+const User = Models.User;
+
+var opts = {}
+opts.jwtFromRequest = ExtractJwt.fromAuthHeaderAsBearerToken();
+opts.secretOrKey = secrets.PASSPORT_JWT_SECRET;
+
+
+passport.use(new JwtStrategy(opts,
+  (jwt_payload, done) => {
+  User.findOne({id: jwt_payload.sub}, function(err, user) {
+    if (err) {
+        return done(err, false, { message: 'Invalid Token.' } );
+    }
+    if (user) {
+        return done(null, user);
+    } else {
+        return done(null, false);
+        // or you could create a new account
+    }
+  });
+}));
 
 // ********************
 
@@ -84,8 +98,16 @@ app.set('view engine', 'ejs');
 
 // Configure middlewares
 app.use(logger('dev'));
+
+// parse application/json
 app.use(bodyParser.json());
+
+// parse application/x-www-form-urlencoded
+// for easier testing with Postman or plain HTML forms
 app.use(bodyParser.urlencoded({ extended: false }));
+
+// Initialize passport
+app.use(passport.initialize());
 
 app.use('/', index);
 app.use('/api/v1', api)
