@@ -4,8 +4,15 @@ const Student = Model.Student;
 const studentsController = {
     index(req, res) {
         // Returns all students
+        console.log("Here");
         Student.find({})
-            .exec((err, students) => res.json(students))
+            .exec((err, students) => {
+                console.log("Here2");
+                if(err){
+                    console.log(err);
+                }
+                res.json(students);
+            });
     },
     show(req, res){
         // Return a single student
@@ -13,7 +20,7 @@ const studentsController = {
 
         // Returns a single student
         // based on the passed in ID parameter
-        Product
+        Student
             .findOne({_id: idParam})
             .exec( (err, student) => res.json(student) );
     },
@@ -29,7 +36,7 @@ const studentsController = {
             // after a successful save
             Student
                 .findOne({_id: saved._id})
-                .exec((err, product) => res.json(student));
+                .exec((err, student) => res.json(student));
         } )
     },
     update(req, res){
