@@ -32,6 +32,32 @@ const studentSchema = Schema({
     level: Number,
 });
 
+const userSchema = Schema({
+    id: ObjectId,
+    first_name: {
+        type:String,
+        required: [true, 'Please Enter a First Name'],
+        max: 100
+    },
+    last_name: {
+        type:String,
+        required: [true, 'Please Enter a Last Name'],
+        max: 100
+    },
+    username: {
+        type:String,
+        required: [true, 'Please Enter a Username'],
+        max: 100
+    },
+    password: {
+        type:String,
+        required: [true, 'Please Enter a Password'],
+        max: 100
+    },
+});
+
+
+
 // Example Schema Definition
 // const productSchema = Schema({
 //     id: ObjectId,
@@ -49,8 +75,9 @@ const studentSchema = Schema({
 // });
 
 const Student = model('Student', studentSchema);
+const User =  model('User', userSchema);
 
 // const Product      = model('Product', productSchema);
 // const Manufacturer = model('Manufacturer', manufacturerSchema);
 
-module.exports = {Student};
+module.exports = {Student,User};
