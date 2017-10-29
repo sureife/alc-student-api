@@ -1,5 +1,5 @@
-const Model = require('../models/index');
-const Student = Model.Student;
+const Models = require('../models/index');
+const Student = Models.Student;
 
 const studentsController = {
     index(req, res) {
